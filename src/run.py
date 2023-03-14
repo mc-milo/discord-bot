@@ -28,6 +28,10 @@ async def change_status():
     await client.change_presence(activity=discord.Game(next(bot_status)))
 
 @client.event
+async def on_error(error):
+    print(error)
+
+@client.event
 async def on_ready():
     await client.tree.sync()
     print("bot ready")

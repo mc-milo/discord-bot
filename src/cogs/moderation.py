@@ -31,5 +31,10 @@ class Moderation(commands.Cog):
         user = discord.Object(id=userID)
         await ctx.guild.unban(user)
 
+    @clear.error
+    async def clear_error(self, ctx, error):
+        if isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send("Error: Missing Required Arguments. You must pass a whole number before running the clear command")
+
 async def setup(client):
     await client.add_cog(Moderation(client))
