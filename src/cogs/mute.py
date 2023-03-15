@@ -12,6 +12,26 @@ class Mute(commands.Cog):
     async def on_ready(self):
         print("Mute is online")
 
+    @commands.Cog.listener()
+    async def on_guild_join(self, guild: discord.Guild):
+        with open("./src/data/muted.json", "r") as f:
+            mute_role = json.load(f)
+        
+        mute_role[str(guild.id)] = None
+    
+        with open("./src/data/muted.json", "w") as f:
+            json.dump(mute_role, f, indent=4)
+
+    @commands.Cog.listener()
+    async def on_guild_remove(self, guild: discord.Guild):
+        with open("./src/data/muted.json", "r") as f:
+            mute_role = json.load(f)
+        
+        mute_role.pop(str(guild.id))
+    
+        with open("./src/data/muted.json", "w") as f:
+            json.dump(mute_role, f, indent=4)
+
     @commands.command()
     @commands.has_permissions(administrator=True)
     async def set_mute_role(self, ctx, role: discord.Role):

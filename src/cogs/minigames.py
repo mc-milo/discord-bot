@@ -13,7 +13,7 @@ class Minigames(commands.Cog):
     async def on_ready(self):
         print("Minigames is online")
     
-    @commands.command(aliases = ["8ball", "eightball"])
+    @commands.command(aliases = ["eightball"], name="8ball")
     async def magic_eightball(self, ctx: commands.context.Context, *, question):
         _8ball = ["It is certain",
                 "The KKK has instructed me to say yes",
