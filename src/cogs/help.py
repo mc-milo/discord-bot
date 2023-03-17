@@ -35,7 +35,7 @@ class Help(commands.Cog):
 
         help_embed.add_field(name="change_prefix", value="changes the prefix from !", inline=False)
 
-        help_embed.set_footer(text=f"Requested by <@{ctx.author}>", icon_url=ctx.author.avatar)
+        help_embed.set_footer(text=f"Requested by {ctx.author.name}", icon_url=ctx.author.avatar)
 
         await ctx.send(embed=help_embed)
 
