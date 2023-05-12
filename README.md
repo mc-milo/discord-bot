@@ -1,17 +1,11 @@
-# DISCORD-BOT
+# discord-bot
 
----
+## how to run
 
-## how to start
+- [ ] install python
+- [ ] add your token in in src/data/token.0
+- [ ] create files (autorole.json, muted.json, prefixes.json, users.json, welcome.json) in src/data
+- [ ] pip install -r requirements.txt
+- [ ] python ./src/run.py
 
-- create a file in src/data called .env
-- place inside
-
-> ```.env
->   token=<your_token_bot_here>
->   endpoint_url=<your_endpoint_url>
->```
-
-note that your endpoint must have the standard api calls as in super duper system
-
-- and then do `python ./src/run.py`
+## and the bot is running
