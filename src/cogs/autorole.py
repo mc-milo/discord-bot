@@ -3,6 +3,7 @@ from discord import app_commands
 from discord.ext import commands
 
 import json
+import requests
 
 class Autorole(commands.Cog):
     def __init__(self, client):
@@ -14,43 +15,19 @@ class Autorole(commands.Cog):
     
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
-        with open("./src/data/autorole.json", "r") as f:
-            auto_role = json.load(f)
+        r = requests.get(f"https://mpamias.duckdns.org:9090/api/get_autorole?server_id={member.guild.id}")
 
-        role = discord.utils.get(member.guild.roles, id=auto_role[str(member.guild.id)])
+        auto_role = r.json().get("autorole")
+
+        role = discord.utils.get(member.guild.roles, id=auto_role)
         await member.add_roles(role)
-
-
-    @commands.Cog.listener()
-    async def on_guild_join(self, guild: discord.Guild):
-        with open("./src/data/autorole.json", "r") as f:
-            autorole = json.load(f)
-        
-        autorole[str(guild.id)] = None
-    
-        with open("./src/data/autorole.json", "w") as f:
-            json.dump(autorole, f, indent=4)
-
-    @commands.Cog.listener()
-    async def on_guild_remove(self, guild: discord.Guild):
-        with open("./src/data/autorole.json", "r") as f:
-            autorole = json.load(f)
-        
-        autorole.pop(str(guild.id))
-    
-        with open("./src/data/autorole.json", "w") as f:
-            json.dump(autorole, f, indent=4)
 
     @commands.command()
     @commands.has_permissions(administrator = True)
     async def set_autorole(self, ctx: commands.context.Context, role: discord.Role):
-        with open("./src/data/autorole.json", "r") as f:
-            autorole = json.load(f)
+        await requests.get(f"https://mpamias.duckdns.org:9090/api/set_autorole?server_id={ctx.guild.id}&autorole={role.id}")
 
-        autorole[str(ctx.guild.id)] = role.id
-    
-        with open("./src/data/autorole.json", "w") as f:
-            json.dump(autorole, f, indent=4)
+        await ctx.send(f"role has been set")
 
 async def setup(client):
     await client.add_cog(Autorole(client))

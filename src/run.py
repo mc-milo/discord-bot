@@ -3,17 +3,19 @@ from discord.ext import commands, tasks
 
 import os
 import asyncio
-import json
-
+import requests
 
 from itertools import cycle
 
+from dotenv import load_dotenv
 
-def get_server_prefix(client, message):
-    with open("./src/data/prefixes.json", "r") as f:
-        prefix = json.load(f)
+load_dotenv("./src/data/.env")
 
-    return prefix[str(message.guild.id)]
+def get_server_prefix(client, message: discord.Message):
+    r = requests.get(f"https://mpamias.duckdns.org:9090/api/get_prefix?server_id={message.guild.id}")
+
+    r.json().get("prefix")
+    return r.json().get("prefix")
 
 
 client = commands.Bot(
@@ -37,35 +39,18 @@ async def on_ready():
     change_status.start()
 
 @client.event
-async def on_guild_join(guild):
-    with open("./src/data/prefixes.json", "r") as f:
-        prefix = json.load(f)
-
-    prefix[str(guild.id)] = "!"
-
-    with open("./src/data/prefixes.json", "w") as f:
-        json.dump(prefix, f, indent=4)
+async def on_guild_join(guild: discord.Guild):
+    requests.get(f"https://mpamias.duckdns.org:9090/api/join_guild?server_id={guild.id}")
 
 @client.event
 async def on_guild_remove(guild):
-    with open("./src/data/prefixes.json", "r") as f:
-        prefix = json.load(f)
-
-    prefix.pop(str(guild.id))
-
-    with open("./src/data/prefixes.json", "w") as f:
-        json.dump(prefix, f, indent=4)
+    requests.get(f"https://mpamias.duckdns.org:9090/api/remove_guild?server_id={guild.id}")
 
 @client.command()
 async def change_prefix(ctx: commands.context.Context, *, prefix: str):
-    with open("./src/data/prefixes.json", "r") as f:
-        prefixes = json.load(f)
+    requests.get(f"https://mpamias.duckdns.org:9090/api/set_prefix?server_id={ctx.guild.id}&prefix={prefix}")
 
-    prefixes[str(ctx.guild.id)] = prefix
-
-    with open("./src/data/prefixes.json", "w") as f:
-        json.dump(prefixes, f, indent=4)
-    await ctx.send(f"Prefix changed to {prefix}")
+    ctx.send(f"prefix changed to {prefix}")
 
 @client.tree.command(name="ping", description="shows bot's latency in ms.")
 async def ping(interaction: discord.Interaction):
@@ -81,6 +66,6 @@ async def load():
 async def main():
     async with client:
         await load()
-        await client.start(open("./src/data/token.0", "r").read())
+        await client.start(os.getenv("token"))
 
 asyncio.run(main())
