@@ -15,5 +15,3 @@
 note that your endpoint must have the standard api calls as in super duper system
 
 - and then do `python ./src/run.py`
-
-![test](https://asciinema.org/a/jEWSslHRor7nocywB3K0RjsMC)
